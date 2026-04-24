@@ -8,6 +8,6 @@ final class NotFoundException extends \RuntimeException
 {
     public function __construct(string $endpoint = '')
     {
-        parent::__construct('API Endpoint not found. (' . $endpoint . ')');
+        parent::__construct('API Endpoint nem található. (' . $endpoint . ')');
     }
 }

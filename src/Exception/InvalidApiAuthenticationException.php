@@ -8,6 +8,6 @@ final class InvalidApiAuthenticationException extends \RuntimeException
 {
     public function __construct()
     {
-        parent::__construct('Missing or invalid API credentials.');
+        parent::__construct('Hiányzó vagy rossz API autentikációs adatok.');
     }
 }

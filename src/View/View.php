@@ -6,7 +6,7 @@ namespace Csaba\SalesApi\View;
 
 final class View
 {
-    public function render(string $template, array $data = []): void
+    public function render(string $template, array $data = [], string $error = ''): void
     {
         $templatePath = __DIR__ . '/templates/' . $template . '.php';
         if (!is_file($templatePath)) {

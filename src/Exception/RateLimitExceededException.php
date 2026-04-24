@@ -8,6 +8,6 @@ final class RateLimitExceededException extends \RuntimeException
 {
     public function __construct()
     {
-        parent::__construct('API Rate limit exceeded.');
+        parent::__construct('API Rate limit túllépve.');
     }
 }

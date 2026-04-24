@@ -59,6 +59,10 @@ $getSortIndicator = static function (string $column) use ($sort, $dir): string {
     <h1 class="page-title">Sales API Lists</h1>
     <p class="page-subtitle">V&aacute;lassz egy list&aacute;t a sorra kattintva, &eacute;s n&eacute;zd meg az els&#337; 20 &#369;rlapot.</p>
 
+    <?php if (!empty($error)) { ?>
+        <h2>Hiba történt: <?php echo $error ?></h2>
+    <?php } else { ?>
+
     <?php if (empty($lists)) { ?>
         <p class="empty-state empty-state--full">Nem tal&aacute;lhat&oacute; lista.</p>
     <?php } else { ?>
@@ -144,6 +148,7 @@ $getSortIndicator = static function (string $column) use ($sort, $dir): string {
                 </table>
             </section>
         <?php } ?>
+    <?php } ?>
     <?php } ?>
 </main>
 

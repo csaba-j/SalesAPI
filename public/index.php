@@ -8,7 +8,12 @@ use Csaba\SalesApi\DataProvider\MockDataProvider;
 use Csaba\SalesApi\View\ListPageDataFactory;
 use Csaba\SalesApi\View\View;
 
+$error = '';
 $listPageDataFactory = new ListPageDataFactory(new MockDataProvider());
-$viewData = $listPageDataFactory->build($_GET);
+try {
+    $viewData = $listPageDataFactory->build($_GET);
+} catch (\Throwable $e) {
+    $error = $e->getMessage();
+}
 
-(new View())->render('lists', $viewData);
+(new View())->render('lists', $viewData, $error);
