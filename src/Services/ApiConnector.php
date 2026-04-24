@@ -6,6 +6,8 @@ namespace Csaba\SalesApi\Services;
 
 use Csaba\SalesApi\DTO\ListDTO;
 use Csaba\SalesApi\Exception\InvalidApiAuthenticationException;
+use Csaba\SalesApi\Exception\NotFoundException;
+use Csaba\SalesApi\Exception\RateLimitExceededException;
 use JsonException;
 
 final class ApiConnector
@@ -79,18 +81,22 @@ final class ApiConnector
             CURLOPT_URL => $url,
             CURLOPT_USERPWD => $this->username . ':' . $this->password,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 5
         ]);
 
         $response = curl_exec($curl);
-        if ($response === false) {
-            throw new \RuntimeException('cURL error: ' . curl_error($curl));
-        }
 
         $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        if ($statusCode === 401) {
-            throw new InvalidApiAuthenticationException();
+        if ($statusCode !== 200) {
+            throw match ($statusCode) {
+                401 => new InvalidApiAuthenticationException(),
+                404 => new NotFoundException($url),
+                429 => new RateLimitExceededException(),
+                default => new \RuntimeException('API server error: ' . $response),
+            };
+
         }
 
         return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
