@@ -1,21 +1,67 @@
 <?php
 
-use Exception\InvalidApiAuthenticationException;
+declare(strict_types=1);
 
-class ApiConnector
+namespace Csaba\SalesApi\Services;
+
+use Csaba\SalesApi\DTO\ListDTO;
+use Csaba\SalesApi\Exception\InvalidApiAuthenticationException;
+use JsonException;
+
+final class ApiConnector
 {
+    private const LISTS_ENDPOINT = 'https://api.salesautopilot.com/getlists';
+    private const LIST_FORMS_ENDPOINT = 'https://api.salesautopilot.com/getforms/';
+
     private string $username;
     private string $password;
 
     public function __construct()
     {
-        $this->username = getenv('API_USERNAME') ?: "";
-        $this->password = getenv('API_PASSWORD') ?: "";
+        $this->username = (string) getenv('API_USERNAME');
+        $this->password = (string) getenv('API_PASSWORD');
     }
 
+    /**
+     * @throws InvalidApiAuthenticationException
+     * @throws JsonException
+     */
     public function getLists(): array
     {
-        return $this->callApiEndpoint("https://api.salesautopilot.com/getlists");
+        $lists = [];
+        $listsArray = $this->callApiEndpoint(self::LISTS_ENDPOINT);
+
+        foreach ($listsArray as $list) {
+            $lists[] = new ListDTO(
+                $list['id'],
+                $list['name'],
+                $list['size'],
+                new \DateTimeImmutable($list['created_at'])
+            );
+        }
+
+        return $lists;
+    }
+
+    /**
+     * @throws InvalidApiAuthenticationException
+     * @throws JsonException
+     */
+    public function getListForms(string $listId): array
+    {
+        $listForms = [];
+        $listFormsArray = $this->callApiEndpoint(self::LIST_FORMS_ENDPOINT . $listId);
+
+        foreach ($listFormsArray as $listForm) {
+            $listForms[] = new ListDTO(
+                $listForm['id'],
+                $listForm['name'],
+                $listForm['size'],
+                new \DateTimeImmutable($listForm['created_at'])
+            );
+        }
+
+        return $listForms;
     }
 
     /**
@@ -24,7 +70,7 @@ class ApiConnector
      */
     private function callApiEndpoint(string $url): array
     {
-        if (empty($this->username) || empty($this->password)) {
+        if ($this->username === '' || $this->password === '') {
             throw new InvalidApiAuthenticationException();
         }
 
@@ -36,7 +82,6 @@ class ApiConnector
         ]);
 
         $response = curl_exec($curl);
-
         if ($response === false) {
             throw new \RuntimeException('cURL error: ' . curl_error($curl));
         }
