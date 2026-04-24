@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Csaba\SalesApi\Services;
 
+use Csaba\SalesApi\DataProvider\ListDataProviderInterface;
 use Csaba\SalesApi\DTO\ListDTO;
 use Csaba\SalesApi\Exception\InvalidApiAuthenticationException;
 use Csaba\SalesApi\Exception\NotFoundException;
